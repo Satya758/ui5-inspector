@@ -1,6 +1,6 @@
 {
     "manifest_version": 2,
-    "name": "UI5 Inspector",
+    "name": "AC UI5 Inspector",
     "version": "0.9.9",
     "background": {
         "persistence": false,

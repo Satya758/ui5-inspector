@@ -127,6 +127,8 @@ function _getControlTreeRightColumnOfListItem(control) {
         name +
         '<attribute>&#32;id="<attribute-value>' + control.id + '</attribute-value>"</attribute>' +
         '&#62;' +
+        '<attribute>&#32;acClass="<attribute-value>' + control.acClass + '</attribute-value>"</attribute>' +
+        '&#62;' +
         '</tag>';
 }
 

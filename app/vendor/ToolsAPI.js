@@ -120,6 +120,23 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/core/library', 'sap/ui/Global', 'sap
          * Name space for all methods related to control trees
          */
         var controlTree = {
+
+            _acHelpId: function (id) {
+                let jElement = jQuery(`#${id}`);
+                let cArray = jElement.attr('class');
+
+                if (cArray) {
+                    let hId = cArray.split(/\s+/).filter(c => c.includes('help-id-ain'))[0];
+
+                    if (hId) {
+                        return hId;
+                    } else {
+                        return "No AC/AIN Help Id, contact developer";
+                    }
+                } else {
+                    return "No AC/AIN Help Id, contact developer";
+                }
+            },
             /**
              * Creates data model of the rendered controls as a tree.
              * @param {Element} nodeElement - HTML DOM element from which the function will star searching.
@@ -136,6 +153,7 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/core/library', 'sap/ui/Global', 'sap
                 if (node.getAttribute('data-sap-ui') && control) {
                     results.push({
                         id: control.getId(),
+                        acClass: this._acHelpId(control.getId()),
                         name: control.getMetadata().getName(),
                         type: 'sap-ui-control',
                         content: []
@@ -212,14 +230,14 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/core/library', 'sap/ui/Global', 'sap
                     currRegistry = eventRegistry[key];
                     result.events[key] = Object.create(null);
                     result.events[key].paramsType = Object.create(null);
-                    
+
                     if (metaParams) {
                         for (var param in metaParams) {
                             result.events[key].paramsType[param] = metaParams[param].type;
                         }
                     }
 
-                    result.events[key].registry = currRegistry && currRegistry.map(function(currListener) {
+                    result.events[key].registry = currRegistry && currRegistry.map(function (currListener) {
                         view = currListener.oListener && currListener.oListener.oView;
                         listener = Object.create(null);
                         listener.viewId = view && view.sId;
@@ -399,7 +417,7 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/core/library', 'sap/ui/Global', 'sap
                 } else if (aggregation.getId) {
                     content = aggregation.getId();
                 } else if (Array.isArray(aggregation)) {
-                    content = aggregation.map(function(currAggregation) {
+                    content = aggregation.map(function (currAggregation) {
                         return currAggregation.getId()
                     });
                 } else {
@@ -469,7 +487,7 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/core/library', 'sap/ui/Global', 'sap
                     var contextPath;
 
                     // we dont care about the context if path is absolute
-                    if(!isRelative) {
+                    if (!isRelative) {
                         model = model.getModel && model.getModel() || model;
                     }
 
@@ -489,11 +507,11 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/core/library', 'sap/ui/Global', 'sap
                     modelInfo.pathData = model.getProperty(fullPath);
                     modelInfo.fullPath = fullPath;
                     modelInfo.path = pathWithoutModel;
-                    modelInfo.mode =  model.getDefaultBindingMode();
+                    modelInfo.mode = model.getDefaultBindingMode();
                     modelInfo.modelName = pathContainsModelName ? pathParts[0] : undefined;
                     modelInfo.type = type;
                 }
-                catch(err) {
+                catch (err) {
                     // Here we catch error in different cases for handling getObject function
                     // Such an error is thrown when the model is OData v4 because the getObject
                     // throws error.
@@ -529,7 +547,7 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/core/library', 'sap/ui/Global', 'sap
                 var bindingParts = binding.getBindings && binding.getBindings();
                 var model = {};
 
-                if(bindingInfo.parts) {
+                if (bindingInfo.parts) {
                     // take care of multiple bindings of a property
                     model.parts = bindingInfo.parts.map(function (bindingInfoPart, index) {
                         var currentBinding = bindingParts && bindingParts[index] || binding;
@@ -563,8 +581,8 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/core/library', 'sap/ui/Global', 'sap
                         propertiesBindingData[key].formattedValue = control.getProperty(key);
                         propertiesBindingData[key].type =
                             control.getMetadata().getProperty(key) &&
-                            control.getMetadata().getProperty(key).getType() &&
-                            control.getMetadata().getProperty(key).getType().getName ? control.getMetadata().getProperty(key).getType().getName() : '';
+                                control.getMetadata().getProperty(key).getType() &&
+                                control.getMetadata().getProperty(key).getType().getName ? control.getMetadata().getProperty(key).getType().getName() : '';
                         propertiesBindingData[key].mode = binding.getBindingMode();
                         propertiesBindingData[key].model = this._getModelFromContext(control, key);
                     }
@@ -602,15 +620,15 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/core/library', 'sap/ui/Global', 'sap
              * @returns {Object}
              * @private
              */
-            _getBindingContextsForControl: function(control) {
+            _getBindingContextsForControl: function (control) {
                 var bindingContexts = jQuery.extend({},
                     control.oPropagatedProperties && control.oPropagatedProperties.oBindingContexts,
                     control.oBindingContexts,
                     control.mElementBindingContexts
                 );
                 // reduce object to non-empty contexts
-                bindingContexts = Object.keys(bindingContexts).reduce(function(finalContexts, key) {
-                    if(bindingContexts[key]) {
+                bindingContexts = Object.keys(bindingContexts).reduce(function (finalContexts, key) {
+                    if (bindingContexts[key]) {
                         finalContexts[key] = bindingContexts[key];
                     }
                     return finalContexts;
